@@ -1,0 +1,66 @@
+--- Локальные настройки IDE ---
+.idea/
+.vscode/
+*.code-workspace
+
+# --- Виртуальные окружения ---
+venv/
+env/
+.venv/
+.env
+
+# --- Кэш и временные файлы Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Django и лог-файлы ---
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# --- Системные файлы ---
+.DS_Store
+Thumbs.db
+
+# --- Тесты и покрытия ---
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# --- Докер и сборки ---
+*.pid
+*.bak
+*.swp
+*.swo
+*.orig
+
+# --- Node (если используешь фронт) ---
+node_modules/
+dist/
+build/
+
+# --- Кэш pip / Poetry / pyenv ---
+pip-wheel-metadata/
+__pypackages__/
+poetry.lock
+*.egg-info/
+.eggs/
+
+# --- Папки, которые оставляем с .gitkeep ---
+/media/*
+!/media/.gitkeep
+/uploads/*
+!/uploads/.gitkeep
+
+# --- Разное ---
+*.tmp
+*.bak
+

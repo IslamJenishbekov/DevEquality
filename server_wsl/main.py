@@ -54,9 +54,7 @@ def main():
                         continue  # Переходим к следующей итерации цикла, ожидая нового клиента
 
                     logger.info(f"Получено сообщение (имя файла): '{received_data}'")
-
-                    response = 'Тут должна быть вызвана функция логика лангграфа'
-                    input("Ждет моего сигнала")
+                    response = main_imitation(received_data)
                     conn.sendall(response.encode('utf-8'))
 
                     logger.info(f"Отправлен ответ '{response}' клиенту {addr}")
@@ -68,11 +66,11 @@ def main():
 
 
 # may be used without client
-def main_imitation():
+def main_imitation(audio_path: str = "temp_audio/received/create_project.wav"):
     """
     Временная заглушка
     """
-    audio_path = Path("temp_audio/received/create_project.wav")
+    audio_path = Path(audio_path)
     current_state = load_state(STATE_PATH)
     try:
         initial_graph_input = {
@@ -85,9 +83,11 @@ def main_imitation():
         save_state(final_state, STATE_PATH)
     except Exception as e:
         logger.error(f"Ошибка во время выполнения графа: {e}")
+    return "True"
 
 
 
 
 if __name__ == '__main__':
-    main_imitation()
+    #main_imitation()
+    main()

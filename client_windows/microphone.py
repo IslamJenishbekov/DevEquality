@@ -11,6 +11,7 @@ import socket
 import time
 import keyboard
 from configparser import ConfigParser
+from playsound import playsound
 
 # --- Конфигурация ---
 config_file = r'config.ini'
@@ -23,6 +24,7 @@ CHANNELS = int(config['AUDIO']['channels'])
 FORMAT = pyaudio.paInt16
 FRAMES_PER_BUFFER = int(config['AUDIO']['frames_per_buffer'])
 WAVE_OUTPUT_FILENAME = str(Path(__file__).resolve().parents[1] / "server_wsl" / "temp_audio" / "received" / "recorder_audio.wav")
+WAVE_TO_PLAY =str(Path(__file__).resolve().parents[1] / "server_wsl" / "temp_audio" / "pronounced" / "output.wav")
 
 # --- Сетевые настройки ---
 HOST = config['SERVER']['host']
@@ -113,6 +115,8 @@ def save_and_request_permission():
 
             # Проверяем ответ сервера
             if response == 'True':
+                logger.info("Начинаю воспроизводить аудио")
+                play_audio()
                 can_start_new_recording = True
                 logger.info("✓ Сервер разрешил новую запись. Нажмите ПРОБЕЛ, чтобы начать.")
             else:
@@ -145,6 +149,23 @@ def toggle_recording_state():
         can_start_new_recording = False  # Блокируем возможность новой записи до ответа сервера
         logger.info("\n⏹ Запись остановлена. Отправка запроса на сервер...")
         save_and_request_permission()
+
+
+def play_audio():
+    """
+    Воспроизводит аудиофайл по указанному пути
+    """
+    audio_path = Path(WAVE_TO_PLAY)
+    if not audio_path.exists():
+        logger.error(f"Файл для воспроизведения не найден: {WAVE_TO_PLAY}")
+        return
+    try:
+        logger.info(f"Воспроизведение аудио: {WAVE_TO_PLAY}")
+        playsound(str(WAVE_TO_PLAY))
+        logger.info("Воспроизведение завершено.")
+    except Exception as e:
+        # Ловим возможные ошибки от библиотеки playsound
+        logger.error(f"Не удалось воспроизвести аудиофайл. Ошибка: {e}")
 
 
 def main():

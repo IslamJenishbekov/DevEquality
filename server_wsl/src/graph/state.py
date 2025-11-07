@@ -1,6 +1,9 @@
 from typing import TypedDict, Annotated, List
 from langchain_core.messages import BaseMessage
 import operator
+import os
+import json
+from ..core.logger_config import logger
 
 
 class AgentState(TypedDict):
@@ -47,4 +50,36 @@ class AgentState(TypedDict):
     text_to_pronounce: str
 
     # Путь к сгенерированному аудиофайлу, который нужно воспроизвести.
-    audio_to_pronounce: str
+    pronounced_audio: str
+
+
+def get_default_state() -> AgentState:
+    """
+    Фабричная функция для создания и возврата состояния по умолчанию.
+    Гарантирует консистентность структуры состояния во всем приложении.
+    """
+    return {
+        "messages": [],
+        "transcribed_message": "",
+        "audio_filepath": "",
+        "curr_project": None,
+        "curr_dir": None,
+        "curr_file": None,
+        "text_to_pronounce": "",
+        "pronounced_audio": ""
+    }
+
+
+def load_state(state_path: str) -> AgentState:
+    if os.path.exists(state_path):
+        logger.info(f"Загрузка состояния из {state_path}")
+        with open(state_path, 'r') as f:
+            return json.load(f)
+    logger.info("Файл состояния не найден. Используется состояние по умолчанию.")
+    return get_default_state()
+
+
+def save_state(state: dict, state_path: str) -> None:
+    logger.info(f"Сохранение нового состояния в {state_path}")
+    with open(state_path, 'w') as f:
+        json.dump(state, f, indent=4)

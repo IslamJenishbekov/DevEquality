@@ -65,4 +65,4 @@ server_wsl/temp_audio/
 # --- Разное ---
 *.tmp
 *.bak
-
+server_wsl/state

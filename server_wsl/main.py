@@ -2,7 +2,8 @@ import socket
 from src.core.logger_config import logger
 from configparser import ConfigParser
 from pathlib import Path
-
+from src.graph.state import load_state, save_state
+from src.graph.workflow import app
 
 # --- Конфигурация ---
 config_file = str(Path(__file__).resolve().parents[1] / "client_windows" / 'config.ini')
@@ -13,10 +14,13 @@ config.read(config_file)
 HOST = config['SERVER']['host']
 PORT = int(config['SERVER']['port'])
 
+# --- КОНСТАНТЫ ---
+STATE_PATH = r'state/state.json'
+
 
 def main():
     """
-    Временная заглушка.
+    Основной main
     """
     # Создаем TCP/IP сокет
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
@@ -63,5 +67,27 @@ def main():
                     logger.error(f"Произошла ошибка при обработке клиента {addr}: {e}")
 
 
+# may be used without client
+def main_imitation():
+    """
+    Временная заглушка
+    """
+    audio_path = Path("temp_audio/received/create_project.wav")
+    current_state = load_state(STATE_PATH)
+    try:
+        initial_graph_input = {
+            **current_state,
+            "audio_filepath": str(audio_path),
+        }
+        logger.info("Запуск графа")
+        final_state = app.invoke(initial_graph_input)
+        logger.info("Граф завершил работу")
+        save_state(final_state, STATE_PATH)
+    except Exception as e:
+        logger.error(f"Ошибка во время выполнения графа: {e}")
+
+
+
+
 if __name__ == '__main__':
-    main()
+    main_imitation()

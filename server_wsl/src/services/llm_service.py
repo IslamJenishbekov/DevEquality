@@ -3,7 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 from langchain_core.output_parsers import JsonOutputParser
-from llm_answer_schemas import ChooseOperationAndGetFilename
+from .llm_answer_schemas import ChooseOperationAndGetFilename
 import os
 
 load_dotenv()
@@ -13,6 +13,15 @@ class GeminiService:
     """
     Сервис для инкапсуляции всей логики работы с Google Gemini API через LangChain.
     """
+    _instance = None  # Атрибут класса для хранения единственного экземпляра
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            logger.info("Создание нового (и единственного) экземпляра GeminiService...")
+            cls._instance = super(GeminiService, cls).__new__(cls)
+        else:
+            logger.info("Возвращение существующего экземпляра GeminiService...")
+        return cls._instance
 
     def __init__(self, model_name: str = "gemini-2.5-flash", temperature: float = 0.7):
         """
@@ -51,33 +60,35 @@ class GeminiService:
                 "system",
                 "You are an intelligent command router. Your task is to analyze the user's request "
                 "and determine which operation they want to perform and the name of the project, folder, or file. "
+                "If the operation involves a project, the `object_name` must be in PascalCase. Each word starts with a capital letter, with no spaces"
+                "If the operation involves a file or a folder, the `object_name` must be in snake_case. All letters are lowercase, and words are separated by underscores"
                 "Return the result ONLY in JSON format. "
                 "Do not add any explanations or ```json``` wrappers.\n\n{format_instructions}"
             ),
             # --- НАЧАЛО ПРИМЕРОВ (FEW-SHOT EXAMPLES) ---
             (
                 "human",
-                "create a file named main.py"
+                "create a project named big races"
             ),
             (
                 "ai",
-                '{"operation": "create file", "object_name": "main.py"}'
+                '{{"operation": "create project", "object_name": "BigRaces"}}'
             ),
             (
                 "human",
-                "write the code <h1>Hello</h1> to index.html"
+                "write the code Hello to index dot html"
             ),
             (
                 "ai",
-                '{"operation": "edit file", "object_name": "index.html"}'
+                '{{"operation": "edit file", "object_name": "index.html"}}'
             ),
             (
                 "human",
-                "run the script test.py"
+                "run the script test files dot py"
             ),
             (
                 "ai",
-                '{"operation": "run file", "object_name": "test.py"}'
+                '{{"operation": "run file", "object_name": "test_files.py"}}'
             ),
             (
                 "human",
@@ -86,7 +97,7 @@ class GeminiService:
             (
                 "ai",
                 # Важно иметь пример для случая, когда команда не распознана
-                '{"operation": "unknown", "object_name": null}'
+                '{{"operation": "unknown", "object_name": null}}'
             ),
             # --- КОНЕЦ ПРИМЕРОВ ---
             (

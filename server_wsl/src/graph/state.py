@@ -32,6 +32,9 @@ class AgentState(TypedDict):
     # Также перезаписывается.
     transcribed_message: str
 
+    # Выполняемая операция на этой ноде
+    operation: str
+
     # --- Контекст работы ассистента ---
 
     # Текущий проект или рабочая область.
@@ -62,6 +65,7 @@ def get_default_state() -> AgentState:
         "messages": [],
         "transcribed_message": "",
         "audio_filepath": "",
+        "operation": "",
         "curr_project": None,
         "curr_dir": None,
         "curr_file": None,

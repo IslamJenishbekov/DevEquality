@@ -93,7 +93,7 @@ def save_and_request_permission():
     logger.info(f"✓ Аудио сохранено в '{WAVE_OUTPUT_FILENAME}'.")
 
     # Получаем только имя файла из полного пути
-    audio_filename = os.path.basename(WAVE_OUTPUT_FILENAME)
+    audio_filename = WAVE_OUTPUT_FILENAME[WAVE_OUTPUT_FILENAME.find('temp'):].replace("\\", "/")
 
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:

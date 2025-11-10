@@ -24,10 +24,12 @@ def read_file(file_path: str) -> str:
         return "not empty, but error"
 
 
-def edit_file(file_path: str, transcribed_message: str) -> str:
+def edit_file(file_path: str, transcribed_message: str, llm) -> str:
     try:
         with open(file_path, 'w') as f:
             existing_code = f.read()
+        response = llm.edit_file(existing_code, transcribed_message)
+        return response
     except Exception as e:
         logger.error(e)
         return ""

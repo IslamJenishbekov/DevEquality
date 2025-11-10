@@ -7,7 +7,6 @@ from ..services.llm_service import GeminiService
 from ..core.logger_config import logger
 from ..core import file_tools, dir_tools, project_tools
 
-
 logger.info("Загружаем ASR модель")
 asr_service = TranscriptionService()
 logger.info("Экземпляр TranscriptionService создан.")
@@ -21,6 +20,7 @@ llm_service = GeminiService()
 logger.info("Экземпляр Gemini успешно создан")
 
 USER_WORKSPACE = r"projects/"
+
 
 def transcribe_audio_node(state: AgentState) -> Dict:
     """
@@ -105,7 +105,11 @@ def get_operation_and_object_name_node(state: AgentState) -> Dict:
     if "file" in llm_answer['operation']:
         state_to_return["curr_file"] = llm_answer['object_name']
     elif "directory" in llm_answer['operation']:
-        state_to_return["curr_dir"] = llm_answer['object_name']
+        curr_dir = state.get("curr_dir")
+        if not curr_dir:
+            state_to_return["curr_dir"] = llm_answer['object_name']
+        else:
+            state_to_return["curr_dir"] = os.path.join(curr_dir, llm_answer['object_name'])
     elif "project" in llm_answer['operation']:
         state_to_return["curr_project"] = llm_answer['object_name']
     return state_to_return
@@ -154,6 +158,7 @@ def git_clone_project_node(state: AgentState) -> Dict:
     """
 
     """
+
     pass
 
 
@@ -189,7 +194,7 @@ def create_file_node(state: AgentState) -> Dict:
         return {"text_to_pronounce": "We couldn't define the directory"}
     if not curr_file:
         return {"text_to_pronounce": "We couldn't define the file"}
-    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}".replace("//", "/")
     if os.path.exists(filepath):
         return {"text_to_pronounce": f"File {curr_file} already exists."}
     created = file_tools.create_file(filepath)
@@ -209,10 +214,11 @@ def edit_file_node(state: AgentState) -> Dict:
         return {"text_to_pronounce": "We couldn't define the directory"}
     if not curr_file:
         return {"text_to_pronounce": "We couldn't define the file"}
-    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}".replace("//", "/")
     if not os.path.exists(filepath):
         return {"text_to_pronounce": f"File {filepath} does not exist."}
-    edited = file_tools.edit_file(filepath)
+    transcribed_message = state.get("transcribed_message")
+    edited = file_tools.edit_file(filepath, transcribed_message, llm_service)
     if not edited:
         return {"text_to_pronounce": f"Something went wrong editing {filepath}."}
     return {"text_to_pronounce": f"File {filepath} successfully edited."}
@@ -229,14 +235,13 @@ def run_file_node(state: AgentState) -> Dict:
         return {"text_to_pronounce": "We couldn't define the directory"}
     if not curr_file:
         return {"text_to_pronounce": "We couldn't define the file"}
-    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}".replace("//", "/")
     if not os.path.exists(filepath):
         return {"text_to_pronounce": f"File {filepath} doesn't exist."}
     result = file_tools.run_file(filepath)
     if result:
         return {"text_to_pronounce": f"File was ran, and output is: {result}."}
     return {"text_to_pronounce": "Some troubles happened!"}
-
 
 
 def get_file_content_node(state: AgentState) -> Dict:
@@ -250,7 +255,7 @@ def get_file_content_node(state: AgentState) -> Dict:
         return {"text_to_pronounce": "We couldn't define the directory"}
     if not curr_file:
         return {"text_to_pronounce": "We couldn't define the file"}
-    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}".replace("//", "/")
     if not os.path.exists(filepath):
         return {"text_to_pronounce": f"File {filepath} doesn't exist."}
     content = file_tools.read_file(filepath)
@@ -259,7 +264,6 @@ def get_file_content_node(state: AgentState) -> Dict:
     if content == "":
         return {"text_to_pronounce": f"File {filepath} is empty"}
     return {"text_to_pronounce": f"System read file and content is: {content}"}
-
 
 
 def summarize_file_content_node(state: AgentState) -> Dict:
@@ -273,7 +277,7 @@ def summarize_file_content_node(state: AgentState) -> Dict:
         return {"text_to_pronounce": "We couldn't define the directory"}
     if not curr_file:
         return {"text_to_pronounce": "We couldn't define the file"}
-    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}".replace("//", "/")
     if not os.path.exists(filepath):
         return {"text_to_pronounce": f"File {filepath} doesn't exist."}
     summary = file_tools.summarize_file(filepath, llm_service)

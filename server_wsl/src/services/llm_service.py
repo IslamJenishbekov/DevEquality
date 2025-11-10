@@ -124,3 +124,41 @@ class GeminiService:
         prompt = f"Please read this file and summarize it's content: '{content}'"
         response = self.llm.invoke(prompt)
         return response
+
+    def edit_file(self, existing_code, transcribed_message):
+        """
+
+        """
+        template = """
+        You are a highly precise code editing engine. Your sole purpose is to take existing code and apply a series of spoken instructions to it.
+
+        You MUST interpret the following spoken commands as formatting instructions:
+        - "enter": Insert a newline character (\n).
+        - "tab": Insert an indentation (4 spaces).
+        - "colon": Insert a colon character (:).
+        # Добавьте другие команды по необходимости, например:
+        # - "backspace": Delete the previous character.
+        # - "delete line": Delete the entire current line.
+
+        Follow these steps:
+        1. Analyze the existing code.
+        2. Carefully process the user's spoken instructions, applying the special formatting commands listed above.
+        3. Integrate the new code and formatting changes into the existing code.
+
+        Your output MUST be ONLY the complete, final code. Do not include any explanations, comments about your work, or markdown code fences like ```python.
+
+        ### EXISTING CODE:
+        {existing_code}
+
+        ### USER'S SPOKEN INSTRUCTIONS:
+        {transcribed_message}
+
+        ### FINAL FULL CODE:
+        """
+
+        prompt = template.format(
+            existing_code=existing_code,
+            transcribed_message=transcribed_message
+        )
+        answer = self.llm.invoke(prompt)
+        return answer

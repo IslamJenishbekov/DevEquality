@@ -66,9 +66,9 @@ def get_default_state() -> AgentState:
         "transcribed_message": "",
         "audio_filepath": "",
         "operation": "",
-        "curr_project": None,
-        "curr_dir": None,
-        "curr_file": None,
+        "curr_project": "",
+        "curr_dir": "",
+        "curr_file": "",
         "text_to_pronounce": "",
         "pronounced_audio": ""
     }

@@ -66,3 +66,4 @@ server_wsl/temp_audio/
 *.tmp
 *.bak
 server_wsl/state
+server_wsl/projects

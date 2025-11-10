@@ -116,3 +116,11 @@ class GeminiService:
         })
 
         return result
+
+    def summarize_file_content(self, content):
+        """
+
+        """
+        prompt = f"Please read this file and summarize it's content: '{content}'"
+        response = self.llm.invoke(prompt)
+        return response

@@ -43,17 +43,11 @@ def transcribe_audio_node(state: AgentState) -> Dict:
     transcribed_message = asr_service.transcribe(audio_path)
     # Добавляем новую информацию в историю сообщений для LLM
     # Это хорошая практика, чтобы LLM видел всю историю взаимодействия
-    messages = state.get("messages", [])
-    messages.append({
-        "audio_filepath": audio_path,
-        "transcribed_message": transcribed_message
-    })
 
     logger.info(f"Результат транскрибации: '{transcribed_message}'")
 
     return {
         "transcribed_message": transcribed_message,
-        "messages": messages
     }
 
 
@@ -74,12 +68,6 @@ def synthesize_audio_node(state: AgentState) -> Dict:
     if not text_to_pronounce:
         text_to_pronounce = "It is just a demo"
     tts_service.synthesize(text_to_pronounce, target_filename)
-    messages = state.get("messages", [])
-    messages.append({
-        "text_to_pronounce": text_to_pronounce,
-        "pronounced_audio": target_filename,
-    })
-
     return {
         "pronounced_audio": target_filename,
     }
@@ -152,7 +140,7 @@ def create_project_node(state: AgentState) -> Dict:
     """
     project_name = state.get("curr_project")
     if not project_name:
-        raise ValueError("No project_name in state['curr_project']")
+        return {"text_to_pronounce": "We couldn't define the name of the project."}
     project_path = os.path.join(USER_WORKSPACE, project_name)
     if os.path.exists(project_path):
         return {"text_to_pronounce": f"Project {project_name} already exists."}
@@ -163,31 +151,139 @@ def create_project_node(state: AgentState) -> Dict:
 
 
 def git_clone_project_node(state: AgentState) -> Dict:
+    """
+
+    """
     pass
 
 
 def create_directory_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    directory_name = state.get("curr_dir")
+    project_name = state.get("curr_project")
+    if not project_name:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not directory_name:
+        return {"text_to_pronounce": "We couldn't define the name of the directory."}
+    dir_path = f"{USER_WORKSPACE}/{project_name}/{directory_name}"
+    if os.path.exists(dir_path):
+        return {"text_to_pronounce": f"Directory {directory_name} already exists."}
+
+    created = dir_tools.create_directory(dir_path)
+    if not created:
+        return {"text_to_pronounce": f"Directory {directory_name} wasn't created."}
+    return {"text_to_pronounce": "Directory {directory_name} successfully created."}
 
 
 def create_file_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    curr_project, curr_dir, curr_file = state.get("curr_project"), state.get(
+        "curr_dir"), state.get("curr_file")
+    if not curr_project:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not curr_dir:
+        return {"text_to_pronounce": "We couldn't define the directory"}
+    if not curr_file:
+        return {"text_to_pronounce": "We couldn't define the file"}
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    if os.path.exists(filepath):
+        return {"text_to_pronounce": f"File {curr_file} already exists."}
+    created = file_tools.create_file(filepath)
+    if not created:
+        return {"text_to_pronounce": f"File {filepath} wasn't created."}
+    return {"text_to_pronounce": f"File {filepath} successfully created."}
 
 
 def edit_file_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    curr_project, curr_dir, curr_file = state.get("curr_project"), state.get("curr_dir"), state.get("curr_file")
+    if not curr_project:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not curr_dir:
+        return {"text_to_pronounce": "We couldn't define the directory"}
+    if not curr_file:
+        return {"text_to_pronounce": "We couldn't define the file"}
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    if not os.path.exists(filepath):
+        return {"text_to_pronounce": f"File {filepath} does not exist."}
+    edited = file_tools.edit_file(filepath)
+    if not edited:
+        return {"text_to_pronounce": f"Something went wrong editing {filepath}."}
+    return {"text_to_pronounce": f"File {filepath} successfully edited."}
 
 
 def run_file_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    curr_project, curr_dir, curr_file = state.get("curr_project"), state.get("curr_dir"), state.get("curr_file")
+    if not curr_project:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not curr_dir:
+        return {"text_to_pronounce": "We couldn't define the directory"}
+    if not curr_file:
+        return {"text_to_pronounce": "We couldn't define the file"}
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    if not os.path.exists(filepath):
+        return {"text_to_pronounce": f"File {filepath} doesn't exist."}
+    result = file_tools.run_file(filepath)
+    if result:
+        return {"text_to_pronounce": f"File was ran, and output is: {result}."}
+    return {"text_to_pronounce": "Some troubles happened!"}
+
 
 
 def get_file_content_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    curr_project, curr_dir, curr_file = state.get("curr_project"), state.get("curr_dir"), state.get("curr_file")
+    if not curr_project:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not curr_dir:
+        return {"text_to_pronounce": "We couldn't define the directory"}
+    if not curr_file:
+        return {"text_to_pronounce": "We couldn't define the file"}
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    if not os.path.exists(filepath):
+        return {"text_to_pronounce": f"File {filepath} doesn't exist."}
+    content = file_tools.read_file(filepath)
+    if content == "not empty, but error":
+        return {"text_to_pronounce": "Some troubles happened!"}
+    if content == "":
+        return {"text_to_pronounce": f"File {filepath} is empty"}
+    return {"text_to_pronounce": f"System read file and content is: {content}"}
+
 
 
 def summarize_file_content_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    curr_project, curr_dir, curr_file = state.get("curr_project"), state.get("curr_dir"), state.get("curr_file")
+    if not curr_project:
+        return {"text_to_pronounce": "We couldn't define the project"}
+    if not curr_dir:
+        return {"text_to_pronounce": "We couldn't define the directory"}
+    if not curr_file:
+        return {"text_to_pronounce": "We couldn't define the file"}
+    filepath = f"{curr_project}/{curr_dir}/{curr_file}"
+    if not os.path.exists(filepath):
+        return {"text_to_pronounce": f"File {filepath} doesn't exist."}
+    summary = file_tools.summarize_file(filepath, llm_service)
+    if not summary:
+        return {"text_to_pronounce": "Some troubles happened!"}
+    return {"text_to_pronounce": summary}
+
 
 def unknown_operation_node(state: AgentState) -> Dict:
-    pass
+    """
+
+    """
+    return {"text_to_pronounce": "We couldn't understand your operation, maybe it hasn't implemented yet"}

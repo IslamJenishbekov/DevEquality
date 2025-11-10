@@ -119,7 +119,7 @@ class GeminiService:
 
     def summarize_file_content(self, content):
         """
-
+        Пишет краткое содержимое файла
         """
         prompt = f"Please read this file and summarize it's content: '{content}'"
         response = self.llm.invoke(prompt)
@@ -127,7 +127,8 @@ class GeminiService:
 
     def edit_file(self, existing_code, transcribed_message):
         """
-
+        На основе существующего кода и правок со стороны юзера, должен
+        понять как должен выглядеть финальный вариант кода
         """
         template = """
         You are a highly precise code editing engine. Your sole purpose is to take existing code and apply a series of spoken instructions to it.

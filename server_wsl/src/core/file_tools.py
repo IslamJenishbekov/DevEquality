@@ -24,15 +24,14 @@ def read_file(file_path: str) -> str:
         return "not empty, but error"
 
 
-def edit_file(file_path: str, transcribed_message: str, llm) -> str:
+def edit_file(file_path: str, new_content: str) -> bool:
     try:
         with open(file_path, 'w') as f:
-            existing_code = f.read()
-        response = llm.edit_file(existing_code, transcribed_message)
-        return response
+            f.write(new_content)
+        return True
     except Exception as e:
         logger.error(e)
-        return ""
+        return False
 
 
 def run_file(file_path: str) -> str:
@@ -46,13 +45,3 @@ def run_file(file_path: str) -> str:
         logger.error(e)
         return ""
 
-
-def summarize_file(file_path: str, llm_service: GeminiService):
-    try:
-        with open(file_path, 'r') as f:
-            content = f.read()
-        response = llm_service.summarize_file_content(content)
-        return response
-    except Exception as e:
-        logger.error(e)
-        return ""

@@ -24,7 +24,8 @@ CHANNELS = int(config['AUDIO']['channels'])
 FORMAT = pyaudio.paInt16
 FRAMES_PER_BUFFER = int(config['AUDIO']['frames_per_buffer'])
 WAVE_OUTPUT_FILENAME = str(Path(__file__).resolve().parents[1] / "server_wsl" / "temp_audio" / "received" / "recorder_audio.wav")
-WAVE_TO_PLAY =str(Path(__file__).resolve().parents[1] / "server_wsl" / "temp_audio" / "pronounced" / "output.wav")
+WAVE_TO_PLAY =Path(__file__).resolve().parents[1] / "server_wsl" / "temp_audio" / "pronounced"
+
 
 # --- Сетевые настройки ---
 HOST = config['SERVER']['host']
@@ -160,8 +161,9 @@ def play_audio():
         logger.error(f"Файл для воспроизведения не найден: {WAVE_TO_PLAY}")
         return
     try:
-        logger.info(f"Воспроизведение аудио: {WAVE_TO_PLAY}")
-        playsound(str(WAVE_TO_PLAY))
+        audio_to_play = str(WAVE_TO_PLAY / f"output_{len(os.listdir(WAVE_TO_PLAY))-1}.wav")
+        logger.info(f"Воспроизведение аудио: {audio_to_play}")
+        playsound(str(audio_to_play))
         logger.info("Воспроизведение завершено.")
     except Exception as e:
         # Ловим возможные ошибки от библиотеки playsound

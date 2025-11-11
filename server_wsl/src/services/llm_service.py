@@ -68,6 +68,7 @@ class GeminiService:
                 "and determine which operation they want to perform and the name of the project, folder, or file. "
                 "If the operation involves a project, the `object_name` must be in PascalCase. Each word starts with a capital letter, with no spaces"
                 "If the operation involves a file or a folder, the `object_name` must be in snake_case. All letters are lowercase, and words are separated by underscores"
+                "Remember that, after dot it is oftenly is using .py .txt or extensions like this"
                 "Return the result ONLY in JSON format. "
                 "Do not add any explanations or ```json``` wrappers.\n\n{format_instructions}"
             ),

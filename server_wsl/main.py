@@ -86,8 +86,6 @@ def main_imitation(audio_path: str = "temp_audio/received/create_project.wav"):
     return "True"
 
 
-
-
 if __name__ == '__main__':
     main_imitation()
     #main()

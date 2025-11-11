@@ -81,3 +81,5 @@ class TextToSpeechService:
         except Exception as e:
             logger.error(f"Произошла ошибка во время синтеза речи: {e}")
             return None
+
+

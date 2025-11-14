@@ -188,7 +188,12 @@ def git_clone_project_node(state: AgentState) -> Dict:
               голосовой ответ для пользователя.
     """
 
-    pass
+    transcribed_message = state.get("transcribed_message")
+    git_repo_url = llm_service.get_git_repo_url(transcribed_message)
+    answer = project_tools.clone_project_from_github(git_repo_url, "projects/NEMO")
+    if answer:
+        return {"text_to_pronounce": "Project cloned from GitHub."}
+    return {"text_to_pronounce": "Something went wrong."}
 
 
 def create_directory_node(state: AgentState) -> Dict:

@@ -169,7 +169,7 @@ class GeminiService:
             transcribed_message=transcribed_message
         )
         answer = self.llm.invoke(prompt)
-        return answer
+        return answer.content
 
     def get_git_repo_url(self, transcribed_message: str) -> str:
         """

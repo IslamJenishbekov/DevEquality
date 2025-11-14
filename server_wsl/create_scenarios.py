@@ -9,13 +9,8 @@ while os.path.exists(scenario_path):
 os.makedirs(scenario_path)
 
 scenario_texts = [
-    "Create project Secret.",
-    "Create folder source",
-    "Run file chipher dot py",
-    "Let’s write there: "
-    "x equals five enter y equals ten enter tabulation "
-    "try colon enter tabulation print x plus ten enter "
-    "except Exception as e colon enter tabulation print error is left curly bracket e right curly bracket.",
+    "In file main dot py add the line print open parenthesis quote h e l l o space w o r l d quote close parenthesis.",
+    "Tell what is in file main dot py shortly"
 ]
 
 voice = PiperVoice.load("model_for_scenarios/en_US-john-medium.onnx")

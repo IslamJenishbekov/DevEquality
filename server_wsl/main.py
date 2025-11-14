@@ -4,6 +4,9 @@ from configparser import ConfigParser
 from pathlib import Path
 from src.graph.state import load_state, save_state
 from src.graph.workflow import app
+import os
+import shutil
+
 
 # --- Конфигурация ---
 config_file = str(Path(__file__).resolve().parents[1] / "client_windows" / 'config.ini')
@@ -86,6 +89,25 @@ def main_imitation(audio_path: str = "temp_audio/received/create_project.wav"):
     return "True"
 
 
+def run_scenario(scenario_num: str):
+    output_dir = 'temp_audio/pronounced/'
+    for file in os.listdir(output_dir):
+        if file.endswith(".wav"):
+            os.remove(os.path.join(output_dir, file))
+    state_file = "state/state.json"
+    if os.path.exists(state_file):
+        os.remove(state_file)
+    parent_folder = "projects"
+    for item in os.listdir(parent_folder):
+        item_path = os.path.join(parent_folder, item)
+        if os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+    scenario_path = f"temp_audio/scenarios/scenario{scenario_num}/"
+    for audio in Path(scenario_path).rglob("*.wav"):
+        main_imitation(str(audio))
+        input()
+
 if __name__ == '__main__':
     #main_imitation()
-    main()
+    #main()
+    run_scenario("3")

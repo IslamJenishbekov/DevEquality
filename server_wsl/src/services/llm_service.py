@@ -68,7 +68,8 @@ class GeminiService:
                 "and determine which operation they want to perform and the name of the project, folder, or file. "
                 "If the operation involves a project, the `object_name` must be in PascalCase. Each word starts with a capital letter, with no spaces"
                 "If the operation involves a file or a folder, the `object_name` must be in snake_case. All letters are lowercase, and words are separated by underscores"
-                "Remember that, after dot it is oftenly is using .py .txt or extensions like this"
+                "Remember that file names usually include an extension after the dot, such as .py, .txt, or similar. "
+                "In case of object name hullo or hallo set object name hello please"
                 "Return the result ONLY in JSON format. "
                 "Do not add any explanations or ```json``` wrappers.\n\n{format_instructions}"
             ),
@@ -91,7 +92,7 @@ class GeminiService:
             ),
             (
                 "human",
-                "run the script test files dot py"
+                "run the script test files dot pie"
             ),
             (
                 "ai",
@@ -105,6 +106,33 @@ class GeminiService:
                 "ai",
                 # Важно иметь пример для случая, когда команда не распознана
                 '{{"operation": "unknown", "object_name": null}}'
+            ),
+            (
+                "human",
+                "hi create filemean dot py"
+            ),
+            (
+                "ai",
+                # Важно иметь пример для случая, когда команда не распознана
+                '{{"operation": "create file", "object_name": "main.py"}}'
+            ),
+            (
+                "human",
+                "hi create hullo dot py"
+            ),
+            (
+                "ai",
+                # Важно иметь пример для случая, когда команда не распознана
+                '{{"operation": "create file", "object_name": "hello.py"}}'
+            ),
+            (
+                "human",
+                "somrise content o file allow dats pie"
+            ),
+            (
+                "ai",
+                # Важно иметь пример для случая, когда команда не распознана
+                '{{"operation": "summarize file", "object_name": "hullo.py"}}'
             ),
             # --- КОНЕЦ ПРИМЕРОВ ---
             (
@@ -128,8 +156,8 @@ class GeminiService:
         """
         Пишет краткое содержимое файла
         """
-        prompt = f"Please read this file and summarize it's content: '{content}'"
-        response = self.llm.invoke(prompt)
+        prompt = f"Please read this file and summarize it's content: '{content}', if content is empty, say that it is empty file"
+        response = self.llm.invoke(prompt).content
         return response
 
     def edit_file(self, existing_code: str, transcribed_message: str) -> str:
@@ -153,7 +181,7 @@ class GeminiService:
         2. Carefully process the user's spoken instructions, applying the special formatting commands listed above.
         3. Integrate the new code and formatting changes into the existing code.
 
-        Your output MUST be ONLY the complete, final code. Do not include any explanations, comments about your work, or markdown code fences like ```python.
+        Your output MUST be ONLY the complete, final code Python. Do not include any explanations, comments about your work, or markdown code fences like ```python.
 
         ### EXISTING CODE:
         {existing_code}

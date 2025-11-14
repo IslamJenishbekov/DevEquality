@@ -37,7 +37,7 @@ def edit_file(file_path: str, new_content: str) -> bool:
 def run_file(file_path: str) -> str:
     try:
         result = subprocess.run(["python", file_path], capture_output=True, text=True)
-        answer = f"Your code output: {result.stdout}"
+        answer = f"{result.stdout}"
         if result.stderr:
             answer += f"\nBut then this error occurred: {result.stderr}"
         return answer

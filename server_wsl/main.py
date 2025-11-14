@@ -108,6 +108,6 @@ def run_scenario(scenario_num: str):
         input()
 
 if __name__ == '__main__':
-    #main_imitation()
+    #main_imitation('temp_audio/scenarios/scenario1/3.wav')
     main()
     #run_scenario("3")

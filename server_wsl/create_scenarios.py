@@ -2,17 +2,16 @@ import os
 import wave
 from piper import PiperVoice
 
-scenario_path = r"temp_audio/scenarios/scenario1"
+scenario_path = r"temp_audio/scenarios/scenario8"
 while os.path.exists(scenario_path):
     num = scenario_path[-1]
     scenario_path = scenario_path[:-1] + str(int(num) + 1)
 os.makedirs(scenario_path)
 
 scenario_texts = [
-    "create project My First Project",
-    "create directory temp",
-    "create file main dot py",
-    "summarize content of file main dot py"
+    "create project Big",
+    "create file hello dot py",
+    "read file hello dot py"
 ]
 
 voice = PiperVoice.load("model_for_scenarios/en_US-john-medium.onnx")

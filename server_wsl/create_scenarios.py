@@ -9,8 +9,10 @@ while os.path.exists(scenario_path):
 os.makedirs(scenario_path)
 
 scenario_texts = [
-    "In file main dot py add the line print open parenthesis quote h e l l o space w o r l d quote close parenthesis.",
-    "Tell what is in file main dot py shortly"
+    "create project My First Project",
+    "create directory temp",
+    "create file main dot py",
+    "summarize content of file main dot py"
 ]
 
 voice = PiperVoice.load("model_for_scenarios/en_US-john-medium.onnx")

@@ -109,5 +109,5 @@ def run_scenario(scenario_num: str):
 
 if __name__ == '__main__':
     #main_imitation()
-    #main()
-    run_scenario("3")
+    main()
+    #run_scenario("3")
